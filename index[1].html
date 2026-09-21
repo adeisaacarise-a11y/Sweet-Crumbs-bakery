@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Sweet Crumbs - nut-free baked goods ordering app">
+<title>Sweet Crumbs | Nut-Free Bakery</title>
+<style>
+:root{--cream:#fffaf3;--brown:#5a3825;--pink:#f5c6c6;--dark:#2e2119;--white:#fff;--green:#557a55}
+*{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:var(--cream);color:var(--dark)}
+header{background:var(--pink);padding:18px 6%;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:5}
+.logo{display:flex;align-items:center;gap:10px;font-size:1.25rem;font-weight:800;color:var(--brown)} .logo img{width:48px;height:48px;object-fit:cover;border-radius:50%} nav a{margin-left:18px;color:var(--brown);text-decoration:none;font-weight:700}
+.cart-btn{border:0;background:var(--brown);color:#fff;padding:11px 15px;border-radius:22px;font-weight:700;cursor:pointer}
+.hero{text-align:center;padding:70px 20px 55px;background:linear-gradient(180deg,#ffe3e3,#fffaf3)}
+.hero h1{font-size:clamp(2.3rem,6vw,4.4rem);margin:0 0 12px;color:var(--brown)}
+.hero p{font-size:1.15rem;max-width:650px;margin:0 auto 24px;line-height:1.6}
+.cta{display:inline-block;background:var(--brown);color:#fff;padding:13px 22px;border-radius:28px;text-decoration:none;font-weight:800}
+.notice{max-width:900px;margin:25px auto;padding:15px 18px;background:#edf5ea;border-left:5px solid var(--green);border-radius:10px;line-height:1.5}
+section{max-width:1100px;margin:auto;padding:45px 20px}.section-title{text-align:center;color:var(--brown);font-size:2rem;margin-bottom:30px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:20px}
+.card{background:#fff;border-radius:18px;padding:20px;box-shadow:0 5px 20px #0000000d;display:flex;flex-direction:column}
+.emoji{font-size:3rem}.card h3{margin:12px 0 6px;color:var(--brown)}.desc{color:#665b54;min-height:48px;line-height:1.45}
+.price{font-size:1.25rem;font-weight:800;margin:12px 0}.allergen{font-size:.85rem;background:#edf5ea;color:#385538;padding:7px 9px;border-radius:8px;margin-bottom:13px}
+.add{border:0;background:var(--brown);color:#fff;padding:11px;border-radius:10px;font-weight:800;cursor:pointer;margin-top:auto}.add:hover,.cta:hover,.cart-btn:hover{opacity:.9}
+footer{text-align:center;padding:35px 20px;background:#f3ded0;color:#654d3e}
+.overlay{display:none;position:fixed;inset:0;background:#0008;z-index:10}.overlay.show{display:block}
+.cart{position:absolute;right:0;top:0;height:100%;width:min(440px,100%);background:#fff;padding:25px;overflow:auto}
+.close{float:right;border:0;background:none;font-size:1.7rem;cursor:pointer}.cart h2{color:var(--brown)}
+.cart-row{display:grid;grid-template-columns:1fr auto;gap:10px;padding:13px 0;border-bottom:1px solid #eee}.qty button{border:0;background:#eee;border-radius:5px;padding:4px 8px;margin:0 3px;cursor:pointer}
+.total{font-size:1.3rem;font-weight:800;margin:20px 0}.checkout input,.checkout textarea{width:100%;padding:11px;border:1px solid #ccc;border-radius:8px;margin:6px 0 12px;font:inherit}
+.checkout button{width:100%;padding:13px;background:var(--green);color:#fff;border:0;border-radius:9px;font-weight:800;cursor:pointer}
+.empty{color:#777;text-align:center;padding:25px 0}
+.success{display:none;background:#edf5ea;padding:15px;border-radius:10px;margin-top:15px;line-height:1.5}
+@media(max-width:600px){header{padding:15px}nav{display:none}.hero{padding-top:50px}.card{padding:17px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo"><img src="logo.png" alt="Sweet Crumbs Nut-Free Bakery logo"><span>Sweet Crumbs</span></div>
+  <nav><a href="#menu">Menu</a><a href="#about">About</a></nav>
+  <button class="cart-btn" onclick="openCart()">🛒 Cart (<span id="cartCount">0</span>)</button>
+</header>
+
+<main>
+<section class="hero">
+  <img src="logo.png" alt="Sweet Crumbs Nut-Free Bakery" style="width:170px;max-width:55%;border-radius:50%;margin-bottom:18px;box-shadow:0 8px 24px #00000012">
+  <h1>Freshly Baked. Made with Care.</h1>
+  <p>Delicious baked goods made with ingredients selected for our nut-free menu.</p>
+  <a class="cta" href="#menu">Shop the Menu</a>
+</section>
+
+<div class="notice">
+  <strong>🌰 Nut-free information:</strong> Products are intended to be made without peanuts or tree nuts. Before selling, verify every ingredient label and your preparation process for allergen cross-contact, and update this notice to match your actual bakery practices.
+</div>
+
+<section id="menu">
+  <h2 class="section-title">Our Menu</h2>
+  <div class="grid" id="menuGrid"></div>
+</section>
+
+<section id="about">
+  <h2 class="section-title">About Sweet Crumbs</h2>
+  <p style="max-width:750px;margin:auto;text-align:center;line-height:1.7">
+    We make small-batch cookies, cupcakes, brownies, cakes, lemon bars, strawberry treats, and cinnamon rolls.
+    Every menu item has an estimated ingredient cost so you can keep track of pricing and profitability.
+  </p>
+</section>
+</main>
+
+<footer>© 2026 Sweet Crumbs Bakery • Nut-free menu* • Freshly baked</footer>
+
+<div class="overlay" id="overlay" onclick="closeCart(event)">
+  <aside class="cart" onclick="event.stopPropagation()">
+    <button class="close" onclick="closeCart()">×</button>
+    <h2>Your Cart</h2>
+    <div id="cartItems"></div>
+    <div class="total">Total: $<span id="cartTotal">0.00</span></div>
+    <div class="checkout">
+      <h3>Order Information</h3>
+      <input id="customerName" placeholder="Your name" required>
+      <input id="customerContact" placeholder="Email or phone" required>
+      <textarea id="customerNotes" rows="3" placeholder="Pickup notes or special instructions"></textarea>
+      <button onclick="placeOrder()">Place Order</button>
+      <div class="success" id="success"></div>
+    </div>
+  </aside>
+</div>
+
+<script>
+const products = [
+ {id:1,name:"Chocolate Chip Cookie",price:3.00,cost:.32,emoji:"🍪",desc:"Soft, classic cookie with chocolate chips."},
+ {id:2,name:"Sugar Cookie",price:2.75,cost:.14,emoji:"🍪",desc:"Simple, buttery, lightly sweet."},
+ {id:3,name:"Double Chocolate Cookie",price:3.25,cost:.28,emoji:"🍪",desc:"Rich chocolate cookie with chocolate chips."},
+ {id:4,name:"Vanilla Cupcake",price:3.75,cost:.33,emoji:"🧁",desc:"Vanilla cupcake with creamy frosting."},
+ {id:5,name:"Chocolate Cupcake",price:4.00,cost:.26,emoji:"🧁",desc:"Chocolate cupcake with smooth frosting."},
+ {id:6,name:"Strawberry Cupcake",price:4.25,cost:.39,emoji:"🧁",desc:"Strawberry cupcake with strawberry-style frosting."},
+ {id:7,name:"Fudge Brownie",price:4.00,cost:.20,emoji:"🍫",desc:"Dense, chocolatey and fudgy."},
+ {id:8,name:"Lemon Bar",price:3.75,cost:.25,emoji:"🍋",desc:"Bright lemon filling over a buttery crust."},
+ {id:9,name:"Strawberry Shortcake Cup",price:5.50,cost:.87,emoji:"🍓",desc:"Shortcake, strawberries and whipped cream."},
+ {id:10,name:"Vanilla Cake Slice",price:5.00,cost:.52,emoji:"🍰",desc:"Moist vanilla cake with frosting."},
+ {id:11,name:"Chocolate Cake Slice",price:5.25,cost:.55,emoji:"🍫",desc:"Rich chocolate cake with frosting."},
+ {id:12,name:"Cinnamon Roll",price:5.00,cost:.22,emoji:"🥐",desc:"Soft roll with cinnamon-sugar filling and icing."}
+];
+
+let cart = JSON.parse(localStorage.getItem("sweetCrumbsCart") || "{}");
+
+function renderMenu(){
+ const grid=document.getElementById("menuGrid");
+ grid.innerHTML=products.map(p=>`
+ <article class="card">
+   <div class="emoji">${p.emoji}</div>
+   <h3>${p.name}</h3>
+   <div class="desc">${p.desc}</div>
+   <div class="price">$${p.price.toFixed(2)}</div>
+   <div class="allergen">🌰 Nut-free ingredients*</div>
+   <button class="add" onclick="addToCart(${p.id})">Add to Cart</button>
+ </article>`).join("");
+}
+function save(){localStorage.setItem("sweetCrumbsCart",JSON.stringify(cart))}
+function addToCart(id){cart[id]=(cart[id]||0)+1;save();updateCart();openCart()}
+function changeQty(id,delta){cart[id]=(cart[id]||0)+delta;if(cart[id]<=0)delete cart[id];save();updateCart()}
+function updateCart(){
+ let total=0,count=0;
+ const el=document.getElementById("cartItems");
+ const ids=Object.keys(cart);
+ if(!ids.length){el.innerHTML='<div class="empty">Your cart is empty.</div>'}
+ else{
+  el.innerHTML=ids.map(id=>{
+   const p=products.find(x=>x.id==id),q=cart[id];total+=p.price*q;count+=q;
+   return `<div class="cart-row"><div><strong>${p.name}</strong><br>$${p.price.toFixed(2)} × ${q}</div><div class="qty"><button onclick="changeQty(${id},-1)">−</button><button onclick="changeQty(${id},1)">+</button></div></div>`;
+  }).join("");
+ }
+ document.getElementById("cartCount").textContent=count;
+ document.getElementById("cartTotal").textContent=total.toFixed(2);
+}
+function openCart(){document.getElementById("overlay").classList.add("show");updateCart()}
+function closeCart(e){if(!e||e.target===document.getElementById("overlay"))document.getElementById("overlay").classList.remove("show")}
+function placeOrder(){
+ const name=document.getElementById("customerName").value.trim();
+ const contact=document.getElementById("customerContact").value.trim();
+ if(!Object.keys(cart).length){alert("Add at least one item to your cart.");return}
+ if(!name||!contact){alert("Please enter your name and contact information.");return}
+ const lines=Object.keys(cart).map(id=>{const p=products.find(x=>x.id==id);return `${cart[id]} × ${p.name}`});
+ const total=document.getElementById("cartTotal").textContent;
+ document.getElementById("success").style.display="block";
+ document.getElementById("success").innerHTML=`<strong>Order ready!</strong><br>Thanks, ${name}!<br>${lines.join("<br>")}<br><strong>Total: $${total}</strong><br><br>This demo does not process payments or send orders to a bakery account yet.`;
+}
+renderMenu();updateCart();
+</script>
+</body>
+</html>
